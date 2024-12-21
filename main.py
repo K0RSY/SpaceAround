@@ -35,12 +35,14 @@ class Window():
         self.check_quit()
 
     def tick(self):
+        self.planet.position_x += 100 * self.delta_time
+        self.planet.tick()
         self.player.tick()
 
     def draw(self):
         self.space.draw()
-        self.player.draw()
         self.planet.draw()
+        self.player.draw()
         self.gui.draw()
 
 if __name__ == "__main__":

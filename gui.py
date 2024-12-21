@@ -28,6 +28,7 @@ class Gui():
 
         text = f'TPS: {self.game.clock.get_fps(): .0f}\
                        X: {self.game.player.position_x: .0f} Y: {self.game.player.position_y: .0f}\
+                       ROTATION: {self.game.player.rotation: .0f} \
                        PPT: {self.game.player.speed: .2f}'.replace("                       ", "\n")
         self.draw_text(text)
         

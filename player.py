@@ -43,12 +43,12 @@ class Player():
         mouse_x = pg.mouse.get_pos()[0]
         mouse_y = pg.mouse.get_pos()[1]
 
-        rel_mouse_x = self.screen_x - mouse_x
-        rel_mouse_y = self.screen_y - mouse_y
+        relative_mouse_x = self.screen_x - mouse_x
+        relative_mouse_y = self.screen_y - mouse_y
 
-        if not rel_mouse_x == 0 and not rel_mouse_y == 0:
-            self.rotation = degrees(atan(rel_mouse_y / rel_mouse_x))
-            if rel_mouse_x >= 0: self.rotation -= 180
+        if not relative_mouse_x == 0 and not relative_mouse_y == 0:
+            self.rotation = degrees(atan(relative_mouse_y / relative_mouse_x))
+            if relative_mouse_x >= 0: self.rotation += 180
 
     def tick(self):
         mouse_buttons = pg.mouse.get_pressed()
