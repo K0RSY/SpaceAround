@@ -28,6 +28,42 @@ class Planet():
             self.on_screen = True
         else:
             self.on_screen = False
+            
+    def bounce(self, relative_player_x, relative_player_y, player_distace_multiplier):
+        if not self.game.player.speed_x == 0 and not self.game.player.speed_y == 0:
+            player_rotation = degrees(atan(self.game.player.speed_y / self.game.player.speed_x))
+            if self.game.player.speed_x <= 0: player_rotation -= 180
+        else:
+            player_rotation = 0
+
+        player_position_x = relative_player_x * player_distace_multiplier
+        player_position_y = relative_player_y * player_distace_multiplier
+
+        if not player_position_x == 0 and not player_position_y == 0:
+            bounce_rotation = degrees(atan(player_position_y / player_position_x))
+            if player_position_x >= 0: bounce_rotation == 180
+        else:
+            bounce_rotation = 0
+
+        player_rotation -= bounce_rotation
+
+        if player_rotation > 0:
+            player_rotation = (180 - abs(player_rotation))
+        else:
+            player_rotation = -(180 - abs(player_rotation))
+
+        player_rotation += bounce_rotation
+
+        player_speed = self.game.player.speed * BOUNCE_RATIO
+
+        player_position_x = self.position_x - player_position_x
+        player_position_y = self.position_y - player_position_y
+
+        self.game.player.speed_x = cos(radians(player_rotation)) * player_speed
+        self.game.player.speed_y = sin(radians(player_rotation)) * player_speed
+
+        self.game.player.position_x = player_position_x
+        self.game.player.position_y = player_position_y
 
     def tick(self):
         if self.on_screen == True:
@@ -39,37 +75,4 @@ class Planet():
             player_distace_multiplier = (self.radius + BOUNCE_OFFSET) / player_distace
 
             if player_distace <= self.radius:
-                if not self.game.player.speed_x == 0 and not self.game.player.speed_y == 0:
-                    player_rotation = degrees(atan(self.game.player.speed_y / self.game.player.speed_x))
-                    if self.game.player.speed_x <= 0: player_rotation -= 180
-                else:
-                    player_rotation = 0
-
-                player_position_x = relative_player_x * player_distace_multiplier
-                player_position_y = relative_player_y * player_distace_multiplier
-
-                if not player_position_x == 0 and not player_position_y == 0:
-                    bounce_rotation = degrees(atan(player_position_y / player_position_x))
-                    if player_position_x >= 0: bounce_rotation == 180
-                else:
-                    bounce_rotation = 0
-
-                player_rotation -= bounce_rotation
-
-                if player_rotation > 0:
-                    player_rotation = (180 - abs(player_rotation))
-                else:
-                    player_rotation = -(180 - abs(player_rotation))
-
-                player_rotation += bounce_rotation
-
-                player_speed = self.game.player.speed * BOUNCE_RATIO
-
-                player_position_x = self.position_x - player_position_x
-                player_position_y = self.position_y - player_position_y
-
-                self.game.player.speed_x = cos(radians(player_rotation)) * player_speed
-                self.game.player.speed_y = sin(radians(player_rotation)) * player_speed
-
-                self.game.player.position_x = player_position_x
-                self.game.player.position_y = player_position_y
+                self.bounce(relative_player_x, relative_player_y, player_distace_multiplier)
