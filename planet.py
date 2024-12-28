@@ -66,7 +66,7 @@ class Planet():
         self.game.player.position_y = player_position_y
 
     def tick(self):
-        if self.on_screen == True and self.on_screen == False:
+        if self.on_screen == True:
             relative_player_x = self.position_x - self.game.player.position_x
             relative_player_y = self.position_y - self.game.player.position_y
 

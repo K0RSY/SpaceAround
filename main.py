@@ -34,7 +34,6 @@ class Window():
         self.check_quit()
 
     def tick(self):
-        # self.planet.position_x += 100 * self.delta_time
         self.planet.tick()
         self.player.tick()
 
