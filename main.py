@@ -16,7 +16,7 @@ class Window():
 
         self.player = Player(self)
         self.space = Space(self)
-        self.planet = Planet(self, 2000, 2024, 0)
+        self.planet = Planet(self, 2000, 2000, 0)
         self.gui = Gui(self)
 
     def check_quit(self):
@@ -28,14 +28,13 @@ class Window():
     def update(self):
         pg.display.update()
         self.delta_time = self.clock.tick(TPS) / 1000
-        self.squared_delta_time = self.delta_time ** 2 * 100
 
         self.tick()
         self.draw()
         self.check_quit()
 
     def tick(self):
-        self.planet.position_x += 100 * self.delta_time
+        # self.planet.position_x += 100 * self.delta_time
         self.planet.tick()
         self.player.tick()
 

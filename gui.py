@@ -17,8 +17,8 @@ class Gui():
             self.game.screen.blit(font, text_rect)
 
     def draw_cursor(self):
-        if self.game.player.max_speed != 0:
-            radius = CURSOR_RADIUS * (1 - (self.game.player.speed / self.game.player.max_speed) / 2)
+        if PLAYER_MAX_SPEED != 0:
+            radius = CURSOR_RADIUS * (1 - (self.game.player.speed / PLAYER_MAX_SPEED) / 2)
         else:
             radius = 0
         
@@ -30,8 +30,8 @@ class Gui():
         self.draw_cursor()
 
         text = f'TPS: {self.game.clock.get_fps(): .0f}\
-                       X: {self.game.player.position_x: .0f} Y: {self.game.player.position_y: .0f}\
-                       ROTATION: {self.game.player.rotation: .0f} \
-                       PPT: {self.game.player.speed: .2f}'.replace("                       ", "\n")
+                 X: {self.game.player.position_x: .0f} Y: {self.game.player.position_y: .0f}\
+                 ROTATION: {self.game.player.rotation: .0f} \
+                 SPEED: {self.game.player.speed: .2f} PPT: {self.game.player.speed * self.game.delta_time: .2f}'.replace("                 ", "\n")
         self.draw_text(text)
         

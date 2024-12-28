@@ -20,17 +20,20 @@ class Player():
         self.screen_y = 0
 
     def accelerate(self):
-        acceleration = PLAYER_ACCELERATION_SPEED * self.game.squared_delta_time
+        acceleration = PLAYER_ACCELERATION_SPEED * self.game.delta_time * .5
+
+        acceleration_x = cos(radians(self.rotation)) * acceleration
+        acceleration_y = sin(radians(self.rotation)) * acceleration
         
-        self.speed_x += cos(radians(self.rotation)) * acceleration
-        self.speed_y += sin(radians(self.rotation)) * acceleration
-
+        self.speed_x += acceleration_x
+        self.speed_y += acceleration_y
+    
     def slow_down(self):
-        slowdown = PLAYER_SLOWDOWN_SPEED * self.game.squared_delta_time
-        self.speed = (self.speed_x ** 2 + self.speed_y ** 2) ** 0.5
+        slowdown = PLAYER_SLOWDOWN_SPEED * self.game.delta_time * .5
+        speed = (self.speed_x ** 2 + self.speed_y ** 2) ** 0.5
 
-        if self.speed != 0:
-            speed_multiplier = (self.speed - slowdown) / self.speed
+        if speed != 0:
+            speed_multiplier = (speed - slowdown) / speed
         else:
             speed_multiplier = 0
 
@@ -38,27 +41,35 @@ class Player():
         self.speed_y *= speed_multiplier
 
     def limit_speed(self):
-        self.speed = (self.speed_x ** 2 + self.speed_y ** 2) ** 0.5
+        speed = (self.speed_x ** 2 + self.speed_y ** 2) ** 0.5
         
-        if self.speed != 0:
-            speed_multiplier = min(self.max_speed, max(self.speed, 0)) / self.speed
+        if speed > 0:
+            speed_multiplier = min(PLAYER_MAX_SPEED, max(speed, 0)) / speed
         else:
             speed_multiplier = 0
         
         self.speed_x *= speed_multiplier
         self.speed_y *= speed_multiplier
 
-    def move(self):
-        self.max_speed = PLAYER_MAX_SPEED * self.game.delta_time
+    def calculate_speed(self):
+        self.speed = (self.speed_x ** 2 + self.speed_y ** 2) ** 0.5
 
+    def calculate_half_speed(self):
         if pg.mouse.get_pressed()[0]:
             self.accelerate()
         self.slow_down()
 
         self.limit_speed()
 
-        self.position_x += self.speed_x
-        self.position_y += self.speed_y
+    def move(self):
+        self.calculate_half_speed()
+
+        self.position_x += self.speed_x * self.game.delta_time
+        self.position_y += self.speed_y * self.game.delta_time
+
+        self.calculate_half_speed()
+
+        self.calculate_speed()
 
     def rotate(self):
         mouse_x = pg.mouse.get_pos()[0]
@@ -76,11 +87,8 @@ class Player():
         self.move()
 
     def draw(self):
-        if self.game.delta_time != 0:
-            flame_multiplier = (FLAME_LENGHT + randint(0, 200) / 100) / self.game.delta_time / 100
-        else:
-            flame_multiplier = 0
-
+        flame_multiplier = (FLAME_LENGHT + randint(-FLAME_MAX_OFFSET, FLAME_MAX_OFFSET)) * (self.game.player.speed / PLAYER_MAX_SPEED)
+        
         half_screen_width = self.game.screen.get_size()[0] // 2
         half_screen_height = self.game.screen.get_size()[1] // 2
 
@@ -90,8 +98,8 @@ class Player():
         flame_start_x = self.screen_x
         flame_start_y = self.screen_y
 
-        flame_end_x = self.screen_x - cos(radians(self.rotation)) * self.speed * flame_multiplier
-        flame_end_y = self.screen_y - sin(radians(self.rotation)) * self.speed * flame_multiplier
+        flame_end_x = self.screen_x - cos(radians(self.rotation)) * flame_multiplier
+        flame_end_y = self.screen_y - sin(radians(self.rotation)) * flame_multiplier
 
         wing_left_x = self.screen_x - cos(radians(self.rotation-SHIP_WING_DEGREE)) * SHIP_LENGHT
         wing_left_y = self.screen_y - sin(radians(self.rotation-SHIP_WING_DEGREE)) * SHIP_LENGHT
