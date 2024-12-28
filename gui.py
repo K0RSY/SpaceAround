@@ -17,7 +17,10 @@ class Gui():
             self.game.screen.blit(font, text_rect)
 
     def draw_cursor(self):
-        radius = CURSOR_RADIUS * (1 - (self.game.player.speed / self.game.player.max_speed) / 2)
+        if self.game.player.max_speed != 0:
+            radius = CURSOR_RADIUS * (1 - (self.game.player.speed / self.game.player.max_speed) / 2)
+        else:
+            radius = 0
         
         pg.draw.line(self.game.screen, "orange", (pg.mouse.get_pos()[0] + CURSOR_RADIUS, pg.mouse.get_pos()[1]), (pg.mouse.get_pos()[0] - CURSOR_RADIUS, pg.mouse.get_pos()[1]), LINE_WIDTH)
         pg.draw.line(self.game.screen, "orange", (pg.mouse.get_pos()[0], pg.mouse.get_pos()[1] + CURSOR_RADIUS), (pg.mouse.get_pos()[0], pg.mouse.get_pos()[1] - CURSOR_RADIUS), LINE_WIDTH)

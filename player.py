@@ -19,22 +19,43 @@ class Player():
         self.screen_x = 0
         self.screen_y = 0
 
-    def move(self, direction):
-        acceleration = PLAYER_ACCELERATION_SPEED * direction * self.game.squared_delta_time
-        slowdown = PLAYER_SLOWDOWN_SPEED * self.game.squared_delta_time
-        self.max_speed = PLAYER_MAX_SPEED * self.game.delta_time
+    def accelerate(self):
+        acceleration = PLAYER_ACCELERATION_SPEED * self.game.squared_delta_time
         
-        self.speed_x = self.speed_x + cos(radians(self.rotation)) * acceleration
-        self.speed_y = self.speed_y + sin(radians(self.rotation)) * acceleration
+        self.speed_x += cos(radians(self.rotation)) * acceleration
+        self.speed_y += sin(radians(self.rotation)) * acceleration
 
+    def slow_down(self):
+        slowdown = PLAYER_SLOWDOWN_SPEED * self.game.squared_delta_time
         self.speed = (self.speed_x ** 2 + self.speed_y ** 2) ** 0.5
-        if self.speed != 0:
-            self.speed_multiplier = min(self.max_speed, max(self.speed - slowdown, 0)) / self.speed
-        else:
-            self.speed_multiplier = 0
 
-        self.speed_x *= self.speed_multiplier
-        self.speed_y *= self.speed_multiplier
+        if self.speed != 0:
+            speed_multiplier = (self.speed - slowdown) / self.speed
+        else:
+            speed_multiplier = 0
+
+        self.speed_x *= speed_multiplier
+        self.speed_y *= speed_multiplier
+
+    def limit_speed(self):
+        self.speed = (self.speed_x ** 2 + self.speed_y ** 2) ** 0.5
+        
+        if self.speed != 0:
+            speed_multiplier = min(self.max_speed, max(self.speed, 0)) / self.speed
+        else:
+            speed_multiplier = 0
+        
+        self.speed_x *= speed_multiplier
+        self.speed_y *= speed_multiplier
+
+    def move(self):
+        self.max_speed = PLAYER_MAX_SPEED * self.game.delta_time
+
+        if pg.mouse.get_pressed()[0]:
+            self.accelerate()
+        self.slow_down()
+
+        self.limit_speed()
 
         self.position_x += self.speed_x
         self.position_y += self.speed_y
@@ -51,17 +72,14 @@ class Player():
             if relative_mouse_x >= 0: self.rotation += 180
 
     def tick(self):
-        mouse_buttons = pg.mouse.get_pressed()
-        direction = 0
-
-        if mouse_buttons[0]:
-            direction += 1
-
         self.rotate()
-        self.move(direction)
+        self.move()
 
     def draw(self):
-        flame_multiplier = (3 + randint(0, 200) / 100) / self.game.delta_time / 100
+        if self.game.delta_time != 0:
+            flame_multiplier = (FLAME_LENGHT + randint(0, 200) / 100) / self.game.delta_time / 100
+        else:
+            flame_multiplier = 0
 
         half_screen_width = self.game.screen.get_size()[0] // 2
         half_screen_height = self.game.screen.get_size()[1] // 2
