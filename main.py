@@ -16,7 +16,7 @@ class Window():
 
         self.player = Player(self)
         self.space = Space(self)
-        self.planet = Planet(self, 1000, 2000, 0)
+        self.planet = Planet(self, 1000, 2000, 0, None)
         self.gui = Gui(self)
 
     def check_quit(self):

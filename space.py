@@ -8,8 +8,7 @@ class Space():
     def draw(self):
         self.game.screen.fill("black")
 
-        screen_width = self.game.screen.get_size()[0]
-        screen_height = self.game.screen.get_size()[1]
+        screen_width, screen_height = self.game.screen.get_size()
 
         ship_offset_x = self.game.player.position_x % STAR_FREQUENCY
         ship_offset_y = self.game.player.position_y % STAR_FREQUENCY
@@ -21,7 +20,7 @@ class Space():
         stars_offset_y = screen_offset_y - ship_offset_y
 
         stars_count_x = screen_width // STAR_FREQUENCY + 2
-        stars_count_y = screen_width // STAR_FREQUENCY + 2
+        stars_count_y = screen_height // STAR_FREQUENCY + 2
 
         for x in range(stars_count_x):
             for y in range(stars_count_y):
