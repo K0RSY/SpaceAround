@@ -124,7 +124,7 @@ class Planet():
             player_distace = find_c(relative_player_x, relative_player_y)
 
             if player_distace <= self.gravity_radius:
-                gravity_acceleration = GRAVITY_ACCELERATION_SPEED * self.game.delta_time * .5
+                gravity_acceleration = GRAVITY_MAX_FORCE * self.game.delta_time * .5 * (1 - player_distace / self.gravity_radius)
 
                 gravity_rotation = find_degree(relative_player_x, relative_player_y)
                 gravity_rotation += 180
