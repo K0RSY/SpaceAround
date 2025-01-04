@@ -19,7 +19,7 @@ class Window():
         self.gui = Gui(self)
 
         self.planets = []
-        self.planets.append(Planet(self, 200, 600,  1200, 0))
+        self.planets.append(Planet(self, 400, 1000,  1200, 0))
         self.planets.append(Planet(self, 100, 250, -200, 1, self.planets[0], 2))
         self.planets.append(Planet(self, 50, 150, 200, 1, self.planets[1], -20))
 
