@@ -1,10 +1,9 @@
 import pygame as pg
 from settings import *
-from math import atan, degrees, sin, cos, radians
 from calc import *
 
 class Planet():
-    def __init__(self, game, radius, position_x, position_y, parent):
+    def __init__(self, game, radius, position_x, position_y, parent, speed):
         self.game = game
 
         self.radius = radius
@@ -14,19 +13,20 @@ class Planet():
         self.position_y = position_y
 
         self.parent = parent
+        self.speed = speed
         if not self.parent is None:
             self.find_rotation()
             self.find_distance()
 
     def find_rotation(self):
         relative_x = self.parent.position_x - self.position_x
-        relative_y = self.parent.position_x - self.position_y
+        relative_y = self.parent.position_y - self.position_y
 
         self.rotation = find_degree(relative_x, relative_y)
         
     def find_distance(self):
         relative_x = self.parent.position_x - self.position_x
-        relative_y = self.parent.position_x - self.position_y
+        relative_y = self.parent.position_y - self.position_y
 
         self.distance = find_c(relative_x, relative_y)
 
@@ -90,7 +90,16 @@ class Planet():
 
     def rotate(self):
         if not self.parent is None:
-            pass
+            self.rotation += self.game.delta_time * self.speed
+
+            relative_x = find_a(self.rotation, self.distance)
+            relative_y = find_b(self.rotation, self.distance)
+
+            self.position_x = self.parent.position_x + relative_x
+            self.position_y = self.parent.position_y + relative_y
+
+            print(self.rotation, self.position_x, self.position_y)
+            print(relative_x, relative_y)
 
     def tick(self):
         self.rotate()

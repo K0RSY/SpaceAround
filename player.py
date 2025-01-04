@@ -1,5 +1,4 @@
 import pygame as pg
-from math import sin, cos, radians, atan, degrees
 from settings import *
 from random import randint
 from calc import *

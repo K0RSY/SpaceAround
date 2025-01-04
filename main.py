@@ -16,8 +16,12 @@ class Window():
 
         self.player = Player(self)
         self.space = Space(self)
-        self.planet = Planet(self, 1000, 2000, 0, None)
         self.gui = Gui(self)
+
+        self.planets = []
+        self.planets.append(Planet(self, 1000, 2000, 0, None, 0))
+        self.planets.append(Planet(self, 100, 750, -1, self.planets[0], 2))
+        self.planets.append(Planet(self, 50, 925, -1, self.planets[1], -20))
 
     def check_quit(self):
         for event in pg.event.get():
@@ -34,12 +38,17 @@ class Window():
         self.check_quit()
 
     def tick(self):
-        self.planet.tick()
+        for planet in self.planets:
+            planet.tick()
+
         self.player.tick()
 
     def draw(self):
         self.space.draw()
-        self.planet.draw()
+
+        for planet in self.planets:
+            planet.draw()
+
         self.player.draw()
         self.gui.draw()
 
