@@ -3,12 +3,14 @@ from settings import *
 from calc import *
 
 class Planet():
-    def __init__(self, game, radius, position_x, position_y, parent, speed):
+    def __init__(self, game, radius, gravity_radius, position_x, position_y, parent=None, speed=0):
         self.game = game
 
         self.radius = radius
+        self.gravity_radius = gravity_radius
 
         self.on_screen = False
+        self.gravity_on_screen = False
         self.position_x = position_x
         self.position_y = position_y
 
@@ -30,22 +32,38 @@ class Planet():
 
         self.distance = find_c(relative_x, relative_y)
 
-    def draw(self):
-        screen_top = self.game.player.position_y - self.game.player.screen_y
-        screen_bottom = self.game.player.position_y + self.game.player.screen_y
-        screen_left = self.game.player.position_x - self.game.player.screen_x
-        screen_right = self.game.player.position_x + self.game.player.screen_x
-
+    def draw_planet(self):
         top = self.position_y - self.radius
         bottom = self.position_y + self.radius
         left = self.position_x - self.radius
         right = self.position_x + self.radius
 
-        if top < screen_bottom and bottom > screen_top and left < screen_right and right > screen_left:
+        if top < self.screen_bottom and bottom > self.screen_top and left < self.screen_right and right > self.screen_left:
             pg.draw.circle(self.game.screen, "white", (self.position_x - self.game.player.position_x + self.game.player.screen_x, self.position_y - self.game.player.position_y + self.game.player.screen_y), self.radius, LINE_WIDTH)
             self.on_screen = True
         else:
             self.on_screen = False
+
+    def draw_gravity(self):
+        top = self.position_y - self.gravity_radius
+        bottom = self.position_y + self.gravity_radius
+        left = self.position_x - self.gravity_radius
+        right = self.position_x + self.gravity_radius
+
+        if top < self.screen_bottom and bottom > self.screen_top and left < self.screen_right and right > self.screen_left:
+            pg.draw.circle(self.game.screen, "grey33", (self.position_x - self.game.player.position_x + self.game.player.screen_x, self.position_y - self.game.player.position_y + self.game.player.screen_y), self.gravity_radius, LINE_WIDTH)
+            self.gravity_on_screen = True
+        else:
+            self.gravity_on_screen = False
+
+    def draw(self):
+        self.screen_top = self.game.player.position_y - self.game.player.screen_y
+        self.screen_bottom = self.game.player.position_y + self.game.player.screen_y
+        self.screen_left = self.game.player.position_x - self.game.player.screen_x
+        self.screen_right = self.game.player.position_x + self.game.player.screen_x
+
+        self.draw_gravity()
+        self.draw_planet()
             
     def bounce(self, relative_player_x, relative_player_y, player_distace_multiplier):
         player_rotation = find_degree(self.game.player.speed_x, self.game.player.speed_y)
@@ -101,6 +119,27 @@ class Planet():
             print(self.rotation, self.position_x, self.position_y)
             print(relative_x, relative_y)
 
+    def apply_gravity(self):
+        if self.gravity_on_screen == True:
+            relative_player_x = self.position_x - self.game.player.position_x
+            relative_player_y = self.position_y - self.game.player.position_y
+
+            player_distace = find_c(relative_player_x, relative_player_y)
+
+            if player_distace <= self.gravity_radius:
+                gravity_acceleration = GRAVITY_ACCELERATION_SPEED * self.game.delta_time * .5
+
+                gravity_rotation = find_degree(relative_player_x, relative_player_y)
+                print(gravity_rotation)
+                gravity_rotation += 180
+
+                gravity_acceleration_x = find_a(gravity_rotation, gravity_acceleration)
+                gravity_acceleration_y = find_b(gravity_rotation, gravity_acceleration)
+                
+                self.game.player.speed_x += gravity_acceleration_x
+                self.game.player.speed_y += gravity_acceleration_y
+
     def tick(self):
         self.rotate()
+        self.apply_gravity()
         self.check_collision()
