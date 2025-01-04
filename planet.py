@@ -116,9 +116,6 @@ class Planet():
             self.position_x = self.parent.position_x + relative_x
             self.position_y = self.parent.position_y + relative_y
 
-            print(self.rotation, self.position_x, self.position_y)
-            print(relative_x, relative_y)
-
     def apply_gravity(self):
         if self.gravity_on_screen == True:
             relative_player_x = self.position_x - self.game.player.position_x
@@ -130,7 +127,6 @@ class Planet():
                 gravity_acceleration = GRAVITY_ACCELERATION_SPEED * self.game.delta_time * .5
 
                 gravity_rotation = find_degree(relative_player_x, relative_player_y)
-                print(gravity_rotation)
                 gravity_rotation += 180
 
                 gravity_acceleration_x = find_a(gravity_rotation, gravity_acceleration)
