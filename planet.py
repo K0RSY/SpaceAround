@@ -1,10 +1,12 @@
 import pygame as pg
 from settings import *
 from calc import *
+from explotion import *
 
 class Planet():
-    def __init__(self, game, radius, gravity_radius, position_x, position_y, parent=None, speed=0):
+    def __init__(self, game, position_x, position_y, radius, gravity_radius, parent=None, speed=0):
         self.game = game
+        self.deleated = False
 
         self.radius = radius
         self.gravity_radius = gravity_radius
@@ -105,6 +107,8 @@ class Planet():
 
             if player_distace <= self.radius:
                 self.bounce(relative_player_x, relative_player_y, player_distace_multiplier)
+                self.deleated = True
+                self.game.create_object(Explotion(self.game, self.position_x, self.position_y, self.radius, self.gravity_radius, GRAVITY_MAX_FORCE))
 
     def rotate(self):
         if not self.parent is None:
