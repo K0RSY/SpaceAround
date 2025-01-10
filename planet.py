@@ -106,7 +106,7 @@ class Planet():
             player_distace_multiplier = (self.radius + BOUNCE_OFFSET) / player_distace
 
             if player_distace <= self.radius:
-                if self.game.player.speed >= PLAYER_MAX_SPEED * LETHAL_PLAYER_SPEED:
+                if self.game.player.speed >= LETHAL_PLAYER_SPEED_ON_PIXEL_RADIUS * self.radius:
                     self.deleated = True
                     self.game.create_object(Explotion(self.game, self.position_x, self.position_y, self.radius, self.gravity_radius, GRAVITY_MAX_FORCE))
                 else:
