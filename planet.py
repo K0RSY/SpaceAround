@@ -106,9 +106,11 @@ class Planet():
             player_distace_multiplier = (self.radius + BOUNCE_OFFSET) / player_distace
 
             if player_distace <= self.radius:
-                self.bounce(relative_player_x, relative_player_y, player_distace_multiplier)
-                self.deleated = True
-                self.game.create_object(Explotion(self.game, self.position_x, self.position_y, self.radius, self.gravity_radius, GRAVITY_MAX_FORCE))
+                if self.game.player.speed >= PLAYER_MAX_SPEED * LETHAL_PLAYER_SPEED:
+                    self.deleated = True
+                    self.game.create_object(Explotion(self.game, self.position_x, self.position_y, self.radius, self.gravity_radius, GRAVITY_MAX_FORCE))
+                else:
+                    self.bounce(relative_player_x, relative_player_y, player_distace_multiplier)
 
     def rotate(self):
         if not self.parent is None:
