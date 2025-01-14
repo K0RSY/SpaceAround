@@ -7,4 +7,4 @@ You are contronling spaceship. Using `LMB` you can accelerate in mouse direction
 
 # Run game
 Windows: run file `executable/space_around_1-0_windows.exe` \
-Linux: run file `executable/space_around_1-0_windows.exe`
+Linux: run file `executable/space_around_1-0_linux`
