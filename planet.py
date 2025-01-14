@@ -4,14 +4,16 @@ from calc import *
 from explotion import *
 
 class Planet():
-    def __init__(self, game, position_x, position_y, radius, gravity_radius, parent=None, speed=0):
+    def __init__(self, game, position_x, position_y, radius, gravity_radius, sun=False, parent=None, speed=0):
         self.game = game
         self.deleated = False
 
         self.radius = radius
         self.gravity_radius = gravity_radius
+        self.sun = sun
 
         self.on_screen = False
+        self.orbit_on_screen = False
         self.gravity_on_screen = False
         self.position_x = position_x
         self.position_y = position_y
@@ -34,6 +36,18 @@ class Planet():
 
         self.distance = find_c(relative_x, relative_y)
 
+    def draw_parent_orbit(self):
+        if not self.parent is None:
+            top = self.parent.position_y - self.distance
+            bottom = self.parent.position_y + self.distance
+            left = self.parent.position_x - self.distance
+            right = self.parent.position_x + self.distance
+            if top < self.parent.screen_bottom and bottom > self.screen_top and left < self.screen_right and right > self.screen_left:
+                pg.draw.circle(self.game.screen, "grey17", (self.parent.position_x - self.game.player.position_x + self.game.player.screen_x, self.parent.position_y - self.game.player.position_y + self.game.player.screen_y), self.distance, LINE_WIDTH)
+                self.orbit_on_screen = True
+            else:
+                self.orbit_on_screen = False
+
     def draw_planet(self):
         top = self.position_y - self.radius
         bottom = self.position_y + self.radius
@@ -41,7 +55,10 @@ class Planet():
         right = self.position_x + self.radius
 
         if top < self.screen_bottom and bottom > self.screen_top and left < self.screen_right and right > self.screen_left:
-            pg.draw.circle(self.game.screen, "white", (self.position_x - self.game.player.position_x + self.game.player.screen_x, self.position_y - self.game.player.position_y + self.game.player.screen_y), self.radius, LINE_WIDTH)
+            if self.sun:
+                pg.draw.circle(self.game.screen, "orange", (self.position_x - self.game.player.position_x + self.game.player.screen_x, self.position_y - self.game.player.position_y + self.game.player.screen_y), self.radius)
+            else:
+                pg.draw.circle(self.game.screen, "white", (self.position_x - self.game.player.position_x + self.game.player.screen_x, self.position_y - self.game.player.position_y + self.game.player.screen_y), self.radius, LINE_WIDTH)
             self.on_screen = True
         else:
             self.on_screen = False
@@ -53,7 +70,7 @@ class Planet():
         right = self.position_x + self.gravity_radius
 
         if top < self.screen_bottom and bottom > self.screen_top and left < self.screen_right and right > self.screen_left:
-            pg.draw.circle(self.game.screen, "grey33", (self.position_x - self.game.player.position_x + self.game.player.screen_x, self.position_y - self.game.player.position_y + self.game.player.screen_y), self.gravity_radius, LINE_WIDTH)
+            pg.draw.circle(self.game.screen, "grey34", (self.position_x - self.game.player.position_x + self.game.player.screen_x, self.position_y - self.game.player.position_y + self.game.player.screen_y), self.gravity_radius, LINE_WIDTH)
             self.gravity_on_screen = True
         else:
             self.gravity_on_screen = False
@@ -66,8 +83,9 @@ class Planet():
 
         self.draw_gravity()
         self.draw_planet()
+        self.draw_parent_orbit()
             
-    def bounce(self, relative_player_x, relative_player_y, player_distace_multiplier):
+    def bounce(self, ratio, relative_player_x, relative_player_y, player_distace_multiplier):
         player_rotation = find_degree(self.game.player.speed_x, self.game.player.speed_y)
         player_rotation += 180
 
@@ -85,7 +103,7 @@ class Planet():
 
         player_rotation += bounce_rotation
 
-        player_speed = self.game.player.speed * BOUNCE_RATIO
+        player_speed = self.game.player.speed * ratio
 
         player_position_x = self.position_x - player_position_x
         player_position_y = self.position_y - player_position_y
@@ -106,11 +124,15 @@ class Planet():
             player_distace_multiplier = (self.radius + BOUNCE_OFFSET) / player_distace
 
             if player_distace <= self.radius:
-                if self.game.player.speed >= LETHAL_PLAYER_SPEED_ON_PIXEL_RADIUS * self.radius:
-                    self.deleated = True
-                    self.game.create_object(Explotion(self.game, self.position_x, self.position_y, self.radius, self.gravity_radius, GRAVITY_MAX_FORCE))
+                if self.sun:
+                    self.game.exit()
                 else:
-                    self.bounce(relative_player_x, relative_player_y, player_distace_multiplier)
+                    if self.game.player.speed >= LETHAL_PLAYER_SPEED_ON_PIXEL_RADIUS * self.radius:
+                        self.deleated = True
+                        self.game.create_object(Explotion(self.game, self.position_x, self.position_y, self.radius, self.gravity_radius, GRAVITY_MAX_FORCE))
+                        self.bounce(BOUNCE_EXPLOTION_RATIO, relative_player_x, relative_player_y, player_distace_multiplier)
+                    else:
+                        self.bounce(BOUNCE_RATIO, relative_player_x, relative_player_y, player_distace_multiplier)
 
     def rotate(self):
         if not self.parent is None:

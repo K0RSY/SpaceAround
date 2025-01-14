@@ -4,6 +4,7 @@ from space import *
 from planet import *
 from gui import *
 from explotion import *
+from generator import *
 
 class Window():
     def __init__(self):
@@ -14,21 +15,21 @@ class Window():
         self.screen = pg.display.set_mode(RESOLUTION)
         self.clock = pg.time.Clock()
         self.delta_time = 1
-        self.objects = []
 
         self.player = Player(self)
         self.space = Space(self)
         self.gui = Gui(self)
 
-        self.objects.append(Planet(self,  1200, 0, 400, 1000))
-        self.objects.append(Planet(self, -600, 1, 100, 250, self.objects[0], 2))
-        self.objects.append(Planet(self, -150, 1, 50, 150, self.objects[1], -20))
+        self.objects = genetare(self)
 
     def check_quit(self):
         for event in pg.event.get():
             if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
-                pg.quit()
-                quit()
+                self.exit()
+
+    def exit(self):
+        pg.quit()
+        quit()
 
     def create_object(self, object):
         self.objects.append(object)

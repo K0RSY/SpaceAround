@@ -1,5 +1,6 @@
 import pygame as pg
 from settings import *
+from planet import *
 
 class Gui():
     def __init__(self, game):
@@ -29,9 +30,14 @@ class Gui():
     def draw(self):
         self.draw_cursor()
 
-        text = f'TPS: {self.game.clock.get_fps(): .0f}\
-                 X: {self.game.player.position_x: .0f} Y: {self.game.player.position_y: .0f}\
-                 ROTATION: {self.game.player.rotation: .0f} \
-                 SPEED: {self.game.player.speed: .2f}'.replace("                 ", "\n")
+        text = []
+        text.append(f"TPS: {self.game.clock.get_fps(): .0f}")
+        text.append(f"X: {self.game.player.position_x: .0f} Y: {self.game.player.position_y: .0f}")
+        text.append(f"ROTATION: {self.game.player.rotation: .0f}")
+        text.append(f"SPEED: {self.game.player.speed: .2f}")
+        text.append("")
+        text.append(f"PLANETS: {len([i for i in self.game.objects if type(i) == Planet]) - 1} / {PLANETS_COUNT - 1}")
+
+        text = "\n".join(text)
         self.draw_text(text)
         
