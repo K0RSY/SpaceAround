@@ -1,4 +1,5 @@
 import pygame as pg
+from sys import exit
 from player import *
 from space import *
 from planet import *
@@ -12,7 +13,7 @@ class Window():
         pg.display.set_caption("SpaceAround")
         pg.mouse.set_visible(False)
 
-        self.screen = pg.display.set_mode(RESOLUTION)
+        self.screen = pg.display.set_mode(RESOLUTION, pg.RESIZABLE)
         self.clock = pg.time.Clock()
         self.delta_time = 1
 
@@ -29,18 +30,19 @@ class Window():
 
     def exit(self):
         pg.quit()
-        quit()
+        exit()
 
     def create_object(self, object):
         self.objects.append(object)
 
     def update(self):
-        pg.display.update()
         self.delta_time = self.clock.tick(TPS) / 1000
 
         self.tick()
         self.draw()
         self.check_quit()
+
+        pg.display.update()
 
     def tick(self):
         for object in self.objects:
